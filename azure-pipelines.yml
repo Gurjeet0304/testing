@@ -3,7 +3,12 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
-- master
+ branches:
+   include:
+     - master
+ paths:
+   exclude:
+     - hello.yaml
 
 resources:
 - repo: self
@@ -17,7 +22,7 @@ variables:
   tag: '$(Build.BuildId)'
   
   # Agent VM image name
-  vmImageName: 'ubuntu-latest'
+  vmImageName: 'inhouse'
 
 stages:
 - stage: Build
@@ -26,7 +31,7 @@ stages:
   - job: Build
     displayName: Build
     pool:
-      vmImage: $(vmImageName)
+     name: inhouse
     steps:
     - task: Docker@2
       displayName: Build and push an image to container registry
@@ -37,3 +42,31 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
+
+    - bash: |
+          rm -rf *
+          git clone git@github.com:Gurjeet0304/testing.git
+          git config --global user.email "gurjeetsahi@gmail.com"
+          git config --global user.name "Gurjeet0304"
+          cd prod
+          sed -i "s,gurjeet.azurecr.io/.*,$(containerRegistry)/$(imageRepository):$(tag),g" hello.yaml
+          cp -rf hello.yaml $(Agent.HomeDirectory)
+          git commit -a -m "$(tag)"
+          git push origin
+
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '''$(Agent.HomeDirectory)'''
+        Contents: 'hello.yaml'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
+    - task: HelmInstaller@1
+      inputs:
+        helmVersionToInstall: 'latest'
+
+    
