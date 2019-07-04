@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      name: nginx
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - image: {{ .Values.image.repo }}
+        name: nginx
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: {{ .Release.Name }}-data
+          mountPath: {{ .Values.mount.path }}
+      imagePullSecrets:
+      - name: mydocker
+      volumes:
+      - name: {{ .Release.Name }}-data
+        configMap:
+          name: test
+          items:
+          - key: gurjeet
+            path: index.html

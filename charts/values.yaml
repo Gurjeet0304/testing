@@ -1,0 +1,13 @@
+replicaCount: 1
+image:
+  repo: gurjeet.azurecr.io/gurjeetprod:51
+pod:
+  port: 80
+nameOverride: ""
+fullnameOverride: ""
+service:
+  enabled: true
+  type: NodePort
+  port: 80
+mount:
+  path: /test
