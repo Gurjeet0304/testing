@@ -56,7 +56,7 @@ stages:
 
     - task: CopyFiles@2
       inputs:
-        SourceFolder: '''$(Agent.HomeDirectory)'''
+        SourceFolder: '$(Agent.HomeDirectory)'
         Contents: 'hello.yaml'
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
