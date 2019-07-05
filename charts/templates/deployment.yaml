@@ -18,15 +18,3 @@ spec:
         name: nginx
         ports:
         - containerPort: 80
-        volumeMounts:
-        - name: {{ .Release.Name }}-data
-          mountPath: {{ .Values.mount.path }}
-      imagePullSecrets:
-      - name: mydocker
-      volumes:
-      - name: {{ .Release.Name }}-data
-        configMap:
-          name: test
-          items:
-          - key: gurjeet
-            path: index.html
