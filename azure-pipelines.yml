@@ -8,7 +8,7 @@ trigger:
      - master
  paths:
    exclude:
-     - hello.yaml
+     - charts/*
 
 resources:
 - repo: self
@@ -49,24 +49,41 @@ stages:
           git config --global user.email "gurjeetsahi@gmail.com"
           git config --global user.name "Gurjeet0304"
           cd testing
-          sed -i "s,gurjeet.azurecr.io/.*,$(containerRegistry)/$(imageRepository):$(tag),g" hello.yaml
+          sed -i "s,gurjeet.azurecr.io/.*,$(containerRegistry)/$(imageRepository):$(tag),g" charts/values.yaml
           cp -rf hello.yaml $(Agent.HomeDirectory)
           git commit -a -m "$(tag)"
           git push origin
 
-    - task: CopyFiles@2
+    - task: HelmInstaller@1
       inputs:
-        SourceFolder: '$(Agent.HomeDirectory)'
-        Contents: 'hello.yaml'
-        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+        helmVersionToInstall: 'latest'
+
+    - task: HelmDeploy@0
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceConnection: 'mykube'
+        command: 'package'
+        chartPath: 'charts'
+        updateDependency: true
 
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'drop'
         publishLocation: 'Container'
-    - task: HelmInstaller@1
-      inputs:
-        helmVersionToInstall: 'latest'
+
+ #   - task: CopyFiles@2
+ #     inputs:
+  #      SourceFolder: '$(Agent.HomeDirectory)'
+  #      Contents: 'hello.yaml'
+  #      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+    #- task: PublishBuildArtifacts@1
+    #  inputs:
+    #    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    #    ArtifactName: 'drop'
+    #    publishLocation: 'Container'
+    
+
 
     
