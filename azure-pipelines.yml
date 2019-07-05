@@ -63,7 +63,7 @@ stages:
         connectionType: 'Kubernetes Service Connection'
         kubernetesServiceConnection: 'mykube'
         command: 'package'
-        chartPath: 'charts'
+        chartPath: 'testing/charts'
         #updateDependency: true
 
     - task: PublishBuildArtifacts@1
