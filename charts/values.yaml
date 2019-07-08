@@ -1,6 +1,6 @@
 replicaCount: 1
 image:
-  repo: gurjeet.azurecr.io/gurjeettesting:155
+  repo: gurjeet.azurecr.io/gurjeettesting:156
 pod:
   port: 80
 nameOverride: ""
