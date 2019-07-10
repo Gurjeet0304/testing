@@ -61,10 +61,13 @@ stages:
     - task: HelmDeploy@0
       inputs:
         connectionType: 'Kubernetes Service Connection'
-        kubernetesServiceConnection: 'mykube'
+        kubernetesServiceConnection: 'prod'
         command: 'package'
         chartPath: 'testing/charts'
         #updateDependency: true
+
+
+
 
     - task: PublishBuildArtifacts@1
       inputs:
